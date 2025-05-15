@@ -22,12 +22,24 @@ def compare_files(folder1, folder2):
     # 共通のファイルを比較
     for file in common_files:
         try:
-            with open(os.path.join(folder1, file), 'r') as f1, open(os.path.join(folder2, file), 'r') as f2:
+            with open(os.path.join(folder1, file), 'r', encoding='utf-8') as f1, open(os.path.join(folder2, file), 'r', encoding='utf-8') as f2:
                 content1 = f1.read()
                 content2 = f2.read()
                 if content1 != content2:
                     print(os.path.join(folder1, file))
                     print(os.path.join(folder2, file))
+        except UnicodeDecodeError:
+            try:
+                with open(os.path.join(folder1, file), 'r', encoding='latin-1') as f1, open(os.path.join(folder2, file), 'r', encoding='latin-1') as f2:
+                    content1 = f1.read()
+                    content2 = f2.read()
+                    if content1 != content2:
+                        print(os.path.join(folder1, file))
+                        print(os.path.join(folder2, file))
+            except PermissionError as e:
+                print(f"PermissionError: {e}")
+            except UnicodeDecodeError as e:
+                print(f"UnicodeDecodeError: {e}")
         except PermissionError as e:
             print(f"PermissionError: {e}")
 
@@ -37,7 +49,8 @@ def compare_files(folder1, folder2):
     for file in unique_files2:
         print(os.path.join(folder2, file))
 
+
 # 使用例
-folder1 = './CodeChecker_Diff/base'
-folder2 = './CodeChecker_Diff/recent'
+folder1 = './CodeChecker_Diff/base/'
+folder2 = './CodeChecker_Diff/recent/'
 compare_files(folder1, folder2)
